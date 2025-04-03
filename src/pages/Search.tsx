@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,12 +7,11 @@ import { Slider } from '@/components/ui/slider';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar as CalendarIcon, Search, MapPin, Star } from 'lucide-react';
+import { Calendar as CalendarIcon, Search as SearchIcon, MapPin, Star } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
-// Sample property data
 const allProperties = [
   {
     id: "1",
@@ -119,25 +117,20 @@ const Search = () => {
   });
   const [minRating, setMinRating] = useState(0);
   
-  // Filter properties based on selection
   const filteredProperties = allProperties.filter(property => {
-    // Filter by location
     if (location && !property.location.toLowerCase().includes(location.toLowerCase())) {
       return false;
     }
     
-    // Filter by price range
     if (property.price < priceRange[0] || property.price > priceRange[1]) {
       return false;
     }
     
-    // Filter by property type
     const activeTypes = Object.entries(selectedTypes).filter(([_, isSelected]) => isSelected).map(([type]) => type);
     if (activeTypes.length > 0 && !activeTypes.includes(property.type)) {
       return false;
     }
     
-    // Filter by rating
     if (property.rating < minRating) {
       return false;
     }
@@ -152,12 +145,10 @@ const Search = () => {
         <h1 className="text-3xl font-bold mb-8">Tìm kiếm chỗ ở</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filters sidebar */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-lg shadow p-4">
               <h3 className="font-semibold text-lg mb-4">Lọc kết quả</h3>
               
-              {/* Location search */}
               <div className="mb-4">
                 <label htmlFor="location" className="block text-sm font-medium mb-1">
                   Địa điểm
@@ -174,7 +165,6 @@ const Search = () => {
                 </div>
               </div>
               
-              {/* Date selection */}
               <div className="space-y-3 mb-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">
@@ -235,7 +225,6 @@ const Search = () => {
                 </div>
               </div>
               
-              {/* Price range */}
               <div className="mb-6">
                 <label className="block text-sm font-medium mb-3">
                   Khoảng giá ({priceRange[0].toLocaleString('vi-VN')}đ - {priceRange[1].toLocaleString('vi-VN')}đ)
@@ -250,7 +239,6 @@ const Search = () => {
                 />
               </div>
               
-              {/* Property type */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium mb-2">Loại chỗ ở</h4>
                 {Object.keys(selectedTypes).map((type) => (
@@ -275,7 +263,6 @@ const Search = () => {
                 ))}
               </div>
               
-              {/* Minimum rating */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium mb-2">Đánh giá tối thiểu</h4>
                 <div className="flex gap-2">
@@ -298,7 +285,6 @@ const Search = () => {
                 </div>
               </div>
               
-              {/* Amenities */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium mb-2">Tiện nghi</h4>
                 <div className="grid grid-cols-2 gap-2">
@@ -326,13 +312,12 @@ const Search = () => {
               </div>
               
               <Button className="w-full bg-brand-blue hover:bg-brand-blue/90">
-                <Search className="mr-2 h-4 w-4" />
+                <SearchIcon className="mr-2 h-4 w-4" />
                 Áp dụng bộ lọc
               </Button>
             </div>
           </div>
           
-          {/* Property listing */}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow p-4 mb-6">
               <div className="flex justify-between items-center">
