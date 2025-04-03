@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, MapPin, Wifi, Car, Snowflake, Kitchen, ScrollText, Calendar } from 'lucide-react';
+import { Star, MapPin, Wifi, Car, Snowflake, Utensils, ScrollText, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -239,7 +239,7 @@ const PropertyDetail = () => {
                         {amenity === "Wifi" && <Wifi className="h-4 w-4 mr-2" />}
                         {amenity === "Bãi đỗ xe" && <Car className="h-4 w-4 mr-2" />}
                         {amenity === "Điều hòa" && <Snowflake className="h-4 w-4 mr-2" />}
-                        {amenity === "Bếp đầy đủ" && <Kitchen className="h-4 w-4 mr-2" />}
+                        {amenity === "Bếp đầy đủ" && <Utensils className="h-4 w-4 mr-2" />}
                         <span>{amenity}</span>
                       </div>
                     ))}
