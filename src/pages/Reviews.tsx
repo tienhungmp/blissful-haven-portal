@@ -20,7 +20,7 @@ const reviewFormSchema = z.object({
   email: z.string().email({
     message: "Email không hợp lệ",
   }),
-  rating: z.string().transform(val => parseInt(val, 10)).refine(val => val >= 1 && val <= 5, {
+  rating: z.number().min(1).max(5, {
     message: "Đánh giá phải từ 1 đến 5 sao",
   }),
   comment: z.string().min(10, {
@@ -72,7 +72,7 @@ const Reviews = () => {
     defaultValues: {
       name: '',
       email: '',
-      rating: '5',
+      rating: 5,
       comment: '',
     }
   });
@@ -168,12 +168,12 @@ const Reviews = () => {
                                   <input
                                     type="radio"
                                     value={star}
-                                    checked={parseInt(field.value) === star}
-                                    onChange={() => form.setValue('rating', star.toString())}
+                                    checked={field.value === star}
+                                    onChange={() => form.setValue('rating', star)}
                                     className="sr-only"
                                   />
                                   <Star 
-                                    className={`h-6 w-6 ${parseInt(field.value) >= star ? 'fill-brand-yellow text-brand-yellow' : 'text-gray-300'}`} 
+                                    className={`h-6 w-6 ${field.value >= star ? 'fill-brand-yellow text-brand-yellow' : 'text-gray-300'}`} 
                                   />
                                 </label>
                               ))}
