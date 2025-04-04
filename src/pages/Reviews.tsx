@@ -20,7 +20,7 @@ const Reviews = () => {
         <h1 className="text-3xl font-bold mb-8 text-center">Đánh giá từ khách hàng</h1>
         
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Reviews List */}
+          {/* Reviews List with filtering and sorting */}
           <div className="flex-1">
             <ReviewList reviews={reviewsData} />
           </div>
