@@ -1,17 +1,62 @@
 
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Shield } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const Admin = () => {
   const navigate = useNavigate();
-  // In a real app, you would check if the user is authenticated and has admin privileges
-  const isAuthenticated = false; // Replace with actual auth check
+  const location = useLocation();
+  const { toast } = useToast();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Kiểm tra xem có admin token trong localStorage hay không
+    const adminToken = localStorage.getItem("adminToken");
+    const userEmail = localStorage.getItem("userEmail");
+    
+    // Kiểm tra nếu có token admin hoặc email chứa "admin"
+    if (adminToken || (userEmail && userEmail.includes("admin"))) {
+      setIsAuthenticated(true);
+      
+      // Hiển thị thông báo chào mừng nếu vừa đăng nhập
+      if (location.state?.fromLogin) {
+        toast({
+          title: "Chào mừng quản trị viên",
+          description: "Bạn đã đăng nhập vào trang quản trị thành công",
+        });
+      }
+    }
+    
+    setIsLoading(false);
+  }, [location.state, toast]);
+
+  // Xử lý đăng nhập admin trực tiếp từ trang admin
+  const handleAdminLogin = () => {
+    // Đặt token admin vào localStorage và chuyển hướng đến trang đăng nhập
+    localStorage.setItem("adminRedirect", "true");
+    navigate("/login");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <p>Đang tải...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -29,9 +74,9 @@ const Admin = () => {
             <div className="flex gap-4 justify-center">
               <Button 
                 variant="outline"
-                onClick={() => navigate("/login")}
+                onClick={handleAdminLogin}
               >
-                Đăng nhập
+                Đăng nhập quản trị
               </Button>
               <Button 
                 onClick={() => navigate("/")}

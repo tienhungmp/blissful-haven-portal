@@ -1,6 +1,6 @@
 
-import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,6 +22,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
@@ -33,20 +34,45 @@ const Login = () => {
     },
   });
 
+  useEffect(() => {
+    // Kiểm tra xem người dùng có đang cố đăng nhập vào trang admin không
+    const adminRedirect = localStorage.getItem("adminRedirect");
+    if (adminRedirect) {
+      toast({
+        title: "Đăng nhập quản trị",
+        description: "Vui lòng đăng nhập với tài khoản quản trị viên",
+      });
+      localStorage.removeItem("adminRedirect");
+    }
+  }, [toast]);
+
   const onSubmit = (data: FormValues) => {
     console.log("Login data:", data);
-    // In a real app, you would authenticate with a backend here
+    // Trong ứng dụng thực tế, bạn sẽ xác thực với backend ở đây
     
-    toast({
-      title: "Đăng nhập thành công",
-      description: "Chào mừng bạn quay trở lại BlissStay!",
-    });
+    // Lưu email người dùng để kiểm tra sau này
+    if (data.rememberMe) {
+      localStorage.setItem("userEmail", data.email);
+    }
     
-    // Redirect to admin if admin user, or home if regular user
-    // For demo purposes, check if email contains "admin"
-    if (data.email.includes("admin")) {
-      navigate("/admin");
+    // Kiểm tra xem đây có phải là quản trị viên không (Mô phỏng kiểm tra admin đơn giản)
+    const isAdmin = data.email.includes("admin");
+    
+    if (isAdmin) {
+      localStorage.setItem("adminToken", "admin-token-example");
+      toast({
+        title: "Đăng nhập thành công",
+        description: "Chào mừng quản trị viên quay trở lại BlissStay!",
+      });
+      
+      // Chuyển hướng đến trang admin với trạng thái đăng nhập
+      navigate("/admin", { state: { fromLogin: true } });
     } else {
+      toast({
+        title: "Đăng nhập thành công",
+        description: "Chào mừng bạn quay trở lại BlissStay!",
+      });
+      
       navigate("/");
     }
   };
