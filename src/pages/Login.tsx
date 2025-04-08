@@ -42,7 +42,13 @@ const Login = () => {
       description: "Chào mừng bạn quay trở lại BlissStay!",
     });
     
-    navigate("/");
+    // Redirect to admin if admin user, or home if regular user
+    // For demo purposes, check if email contains "admin"
+    if (data.email.includes("admin")) {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -118,6 +124,11 @@ const Login = () => {
               Chưa có tài khoản?{" "}
               <Link to="/register" className="text-brand-blue hover:underline font-medium">
                 Đăng ký ngay
+              </Link>
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              <Link to="/admin" className="hover:underline">
+                Truy cập trang quản trị
               </Link>
             </p>
           </div>
