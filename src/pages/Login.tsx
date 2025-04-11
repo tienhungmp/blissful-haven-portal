@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +35,6 @@ const Login = () => {
     },
   });
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       const from = (location.state as any)?.from?.pathname || '/';
@@ -44,19 +42,16 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate, location]);
 
-  // Clear errors when unmounting
   useEffect(() => {
     return () => {
       clearError();
     };
   }, [clearError]);
 
-  // Check if redirected from admin page
   useEffect(() => {
     const adminRedirect = localStorage.getItem("adminRedirect");
     if (adminRedirect) {
-      toast({
-        title: "Đăng nhập quản trị",
+      toast("Đăng nhập quản trị", {
         description: "Vui lòng đăng nhập với tài khoản quản trị viên",
       });
       localStorage.removeItem("adminRedirect");
@@ -64,18 +59,15 @@ const Login = () => {
   }, []);
 
   const onSubmit = async (data: FormValues) => {
-    // Remember email if opted in
     if (data.rememberMe) {
       localStorage.setItem("userEmail", data.email);
     }
     
-    // Convert form data to LoginCredentials
     const credentials: LoginCredentials = {
       email: data.email,
       password: data.password,
     };
     
-    // Call login from auth context
     await login(credentials);
   };
 
