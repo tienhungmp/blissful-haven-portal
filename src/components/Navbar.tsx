@@ -1,14 +1,30 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -43,16 +59,68 @@ const Navbar = () => {
           <Link to="/contact" className="text-sm font-medium hover:text-brand-blue transition-colors">
             Liên hệ
           </Link>
+          
+          {/* Render admin link for admins */}
+          {isAuthenticated && user?.role === 'admin' && (
+            <Link to="/admin" className="text-sm font-medium text-yellow-600 hover:text-yellow-700 transition-colors">
+              Quản trị
+            </Link>
+          )}
+          
+          {/* Render host dashboard for hosts */}
+          {isAuthenticated && (user?.role === 'host' || user?.role === 'admin') && (
+            <Link to="/host" className="text-sm font-medium text-green-600 hover:text-green-700 transition-colors">
+              Quản lý chỗ nghỉ
+            </Link>
+          )}
         </nav>
         
-        {/* Auth buttons */}
+        {/* Auth buttons or User menu */}
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Đăng nhập</Link>
-          </Button>
-          <Button size="sm" className="bg-brand-blue hover:bg-brand-blue/90" asChild>
-            <Link to="/register">Đăng ký</Link>
-          </Button>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <User size={18} />
+                  <span>{user?.name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Hồ sơ cá nhân</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/bookings">Lịch sử đặt phòng</Link>
+                </DropdownMenuItem>
+                {user?.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">Quản trị viên</Link>
+                  </DropdownMenuItem>
+                )}
+                {(user?.role === 'host' || user?.role === 'admin') && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/host">Quản lý chỗ nghỉ</Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-500 hover:text-red-600 cursor-pointer">
+                  <LogOut size={16} className="mr-2" />
+                  Đăng xuất
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Đăng nhập</Link>
+              </Button>
+              <Button size="sm" className="bg-brand-blue hover:bg-brand-blue/90" asChild>
+                <Link to="/register">Đăng ký</Link>
+              </Button>
+            </>
+          )}
         </div>
         
         {/* Mobile Navigation */}
@@ -94,13 +162,69 @@ const Navbar = () => {
               >
                 Liên hệ
               </Link>
-              <div className="flex flex-col gap-2 mt-4">
-                <Button variant="outline" size="lg" className="w-full" asChild>
-                  <Link to="/login" onClick={toggleMenu}>Đăng nhập</Link>
-                </Button>
-                <Button size="lg" className="w-full bg-brand-blue hover:bg-brand-blue/90" asChild>
-                  <Link to="/register" onClick={toggleMenu}>Đăng ký</Link>
-                </Button>
+              
+              {/* Conditional admin link */}
+              {isAuthenticated && user?.role === 'admin' && (
+                <Link 
+                  to="/admin" 
+                  className="text-lg font-medium py-2 text-yellow-600 hover:text-yellow-700 transition-colors"
+                  onClick={toggleMenu}
+                >
+                  Quản trị
+                </Link>
+              )}
+              
+              {/* Conditional host link */}
+              {isAuthenticated && (user?.role === 'host' || user?.role === 'admin') && (
+                <Link 
+                  to="/host" 
+                  className="text-lg font-medium py-2 text-green-600 hover:text-green-700 transition-colors"
+                  onClick={toggleMenu}
+                >
+                  Quản lý chỗ nghỉ
+                </Link>
+              )}
+              
+              <div className="mt-4">
+                {isAuthenticated ? (
+                  <div className="flex flex-col gap-2">
+                    <p className="font-medium">Xin chào, {user?.name}</p>
+                    <Link 
+                      to="/profile" 
+                      className="py-2 hover:text-brand-blue"
+                      onClick={toggleMenu}
+                    >
+                      Hồ sơ cá nhân
+                    </Link>
+                    <Link 
+                      to="/bookings" 
+                      className="py-2 hover:text-brand-blue"
+                      onClick={toggleMenu}
+                    >
+                      Lịch sử đặt phòng
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      className="mt-2 w-full justify-start text-red-500" 
+                      onClick={() => {
+                        handleLogout();
+                        toggleMenu();
+                      }}
+                    >
+                      <LogOut size={16} className="mr-2" />
+                      Đăng xuất
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Button variant="outline" size="lg" className="w-full" asChild onClick={toggleMenu}>
+                      <Link to="/login">Đăng nhập</Link>
+                    </Button>
+                    <Button size="lg" className="w-full bg-brand-blue hover:bg-brand-blue/90" asChild onClick={toggleMenu}>
+                      <Link to="/register">Đăng ký</Link>
+                    </Button>
+                  </div>
+                )}
               </div>
             </nav>
           </div>

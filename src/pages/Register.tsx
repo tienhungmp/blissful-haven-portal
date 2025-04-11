@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { RegisterCredentials } from "@/types/auth";
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Tên cần ít nhất 2 ký tự" }),
@@ -29,7 +31,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const Register = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { register, isAuthenticated, error, clearError } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -42,16 +44,31 @@ const Register = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Register data:", data);
-    // In a real app, you would register with a backend here
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Clear errors when unmounting
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
+
+  const onSubmit = async (data: FormValues) => {
+    // Convert form data to RegisterCredentials
+    const credentials: RegisterCredentials = {
+      name: data.fullName,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    };
     
-    toast({
-      title: "Đăng ký thành công",
-      description: "Chào mừng bạn đến với BlissStay!",
-    });
-    
-    navigate("/login");
+    // Call register from auth context
+    await register(credentials);
   };
 
   return (
@@ -63,6 +80,12 @@ const Register = () => {
             <h1 className="text-2xl font-bold text-gray-900">Đăng ký tài khoản</h1>
             <p className="text-gray-600 mt-2">Tạo tài khoản để trải nghiệm dịch vụ tốt nhất</p>
           </div>
+          
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-500 border border-red-200 rounded-md">
+              {error}
+            </div>
+          )}
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

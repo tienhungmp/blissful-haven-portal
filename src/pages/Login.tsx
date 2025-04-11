@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { LoginCredentials } from "@/types/auth";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email không hợp lệ" }),
@@ -23,7 +25,7 @@ type FormValues = z.infer<typeof formSchema>;
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
+  const { login, isAuthenticated, error, clearError } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -34,8 +36,23 @@ const Login = () => {
     },
   });
 
+  // Redirect if already authenticated
   useEffect(() => {
-    // Kiểm tra xem người dùng có đang cố đăng nhập vào trang admin không
+    if (isAuthenticated) {
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
+
+  // Clear errors when unmounting
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
+
+  // Check if redirected from admin page
+  useEffect(() => {
     const adminRedirect = localStorage.getItem("adminRedirect");
     if (adminRedirect) {
       toast({
@@ -44,37 +61,22 @@ const Login = () => {
       });
       localStorage.removeItem("adminRedirect");
     }
-  }, [toast]);
+  }, []);
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Login data:", data);
-    // Trong ứng dụng thực tế, bạn sẽ xác thực với backend ở đây
-    
-    // Lưu email người dùng để kiểm tra sau này
+  const onSubmit = async (data: FormValues) => {
+    // Remember email if opted in
     if (data.rememberMe) {
       localStorage.setItem("userEmail", data.email);
     }
     
-    // Kiểm tra xem đây có phải là quản trị viên không (Mô phỏng kiểm tra admin đơn giản)
-    const isAdmin = data.email.includes("admin");
+    // Convert form data to LoginCredentials
+    const credentials: LoginCredentials = {
+      email: data.email,
+      password: data.password,
+    };
     
-    if (isAdmin) {
-      localStorage.setItem("adminToken", "admin-token-example");
-      toast({
-        title: "Đăng nhập thành công",
-        description: "Chào mừng quản trị viên quay trở lại BlissStay!",
-      });
-      
-      // Chuyển hướng đến trang admin với trạng thái đăng nhập
-      navigate("/admin", { state: { fromLogin: true } });
-    } else {
-      toast({
-        title: "Đăng nhập thành công",
-        description: "Chào mừng bạn quay trở lại BlissStay!",
-      });
-      
-      navigate("/");
-    }
+    // Call login from auth context
+    await login(credentials);
   };
 
   return (
@@ -86,6 +88,12 @@ const Login = () => {
             <h1 className="text-2xl font-bold text-gray-900">Đăng nhập</h1>
             <p className="text-gray-600 mt-2">Chào mừng bạn quay trở lại BlissStay</p>
           </div>
+          
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-500 border border-red-200 rounded-md">
+              {error}
+            </div>
+          )}
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -150,11 +158,6 @@ const Login = () => {
               Chưa có tài khoản?{" "}
               <Link to="/register" className="text-brand-blue hover:underline font-medium">
                 Đăng ký ngay
-              </Link>
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              <Link to="/admin" className="hover:underline">
-                Truy cập trang quản trị
               </Link>
             </p>
           </div>

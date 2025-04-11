@@ -1,6 +1,7 @@
 
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { toast } from 'sonner';
+import { setAuthHeader, isTokenExpired, refreshAccessToken } from './auth';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -24,6 +25,19 @@ export const apiRequest = async <T>(
   config: AxiosRequestConfig
 ): Promise<ApiResponse<T>> => {
   try {
+    // Check and refresh token if needed before making the request
+    await checkAndRefreshToken();
+    
+    // Add auth token to request if available
+    const storedTokens = localStorage.getItem('auth_tokens');
+    if (storedTokens && config.headers) {
+      const { accessToken } = JSON.parse(storedTokens);
+      config.headers = {
+        ...config.headers,
+        ...setAuthHeader(accessToken),
+      };
+    }
+    
     const response: AxiosResponse<T> = await api(config);
     
     return {
@@ -37,6 +51,22 @@ export const apiRequest = async <T>(
     const status = error.response?.status || 500;
     const errorMessage = extractErrorMessage(error);
     
+    // Handle unauthorized errors
+    if (status === 401) {
+      // Try to refresh token if unauthorized
+      const refreshed = await attemptTokenRefresh();
+      
+      // If token refresh was successful, retry the original request
+      if (refreshed) {
+        return apiRequest<T>(config);
+      } else {
+        // If refresh failed, log out the user
+        localStorage.removeItem('auth_tokens');
+        localStorage.removeItem('auth_user');
+        window.location.href = '/login'; // Redirect to login page
+      }
+    }
+    
     // Log the error to console
     console.error('API Error:', error);
     
@@ -49,6 +79,43 @@ export const apiRequest = async <T>(
       status,
       success: false
     };
+  }
+};
+
+// Check if token needs refresh and refresh if needed
+const checkAndRefreshToken = async (): Promise<boolean> => {
+  const storedTokens = localStorage.getItem('auth_tokens');
+  if (!storedTokens) return false;
+  
+  try {
+    const { accessToken, refreshToken } = JSON.parse(storedTokens);
+    
+    // Check if access token is expired
+    if (isTokenExpired(accessToken) && refreshToken) {
+      return await attemptTokenRefresh();
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error checking token:', error);
+    return false;
+  }
+};
+
+// Attempt to refresh the token
+const attemptTokenRefresh = async (): Promise<boolean> => {
+  const storedTokens = localStorage.getItem('auth_tokens');
+  if (!storedTokens) return false;
+  
+  try {
+    const { refreshToken } = JSON.parse(storedTokens);
+    if (!refreshToken) return false;
+    
+    const newTokens = await refreshAccessToken(refreshToken);
+    return !!newTokens;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    return false;
   }
 };
 
@@ -66,22 +133,6 @@ const extractErrorMessage = (error: AxiosError): string => {
     return error.message || 'An unexpected error occurred';
   }
 };
-
-// Add request interceptor (optional)
-api.interceptors.request.use(
-  (config) => {
-    // You can modify config here before request is sent
-    // For example, add auth token
-    const token = localStorage.getItem('authToken');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 // Convenience methods for common HTTP operations
 export const get = <T>(url: string, params?: object, config?: AxiosRequestConfig) => {
