@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -180,6 +181,7 @@ const PropertyDetail = () => {
               price={property.price}
               rating={property.rating}
               maxGuests={property.guests}
+              propertyId={property.id}
             />
           </div>
         </div>
