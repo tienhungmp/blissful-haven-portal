@@ -244,7 +244,7 @@ const HostDashboard = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />
-                        <Tooltip formatter={(value) => [`${value/1000}M VND`, 'Doanh thu']} />
+                        <Tooltip formatter={(value: number) => [`${value/1000}M VND`, 'Doanh thu']} />
                         <Line 
                           type="monotone" 
                           dataKey="revenue" 
