@@ -19,12 +19,14 @@ import {
   BarChart, 
   FileText, 
   Settings,
-  Database
+  Database,
+  Star
 } from "lucide-react";
 import { AdminOverview } from "./AdminOverview";
 import { AdminProperties } from "./AdminProperties";
 import { AdminUsers } from "./AdminUsers";
 import { AdminBookings } from "./AdminBookings";
+import { AdminReviews } from "./AdminReviews";
 import { AdminSettings } from "./AdminSettings";
 
 export function AdminDashboard() {
@@ -40,6 +42,8 @@ export function AdminDashboard() {
         return <AdminUsers />;
       case "bookings":
         return <AdminBookings />;
+      case "reviews":
+        return <AdminReviews />;
       case "settings":
         return <AdminSettings />;
       default:
@@ -96,6 +100,15 @@ export function AdminDashboard() {
                   >
                     <FileText size={20} />
                     <span>Đặt phòng</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    onClick={() => setActiveTab("reviews")}
+                    isActive={activeTab === "reviews"}
+                  >
+                    <Star size={20} />
+                    <span>Đánh giá</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
