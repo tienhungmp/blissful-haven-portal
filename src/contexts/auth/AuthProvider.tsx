@@ -1,75 +1,10 @@
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { User, AuthTokens, LoginCredentials, RegisterCredentials, AuthState, UserRole } from '@/types/auth';
+import React, { useReducer, useEffect } from 'react';
+import { User, AuthTokens, LoginCredentials, RegisterCredentials, UserRole } from '@/types/auth';
 import { post } from '@/lib/api';
 import { toast } from 'sonner';
-
-// Initial authentication state
-const initialState: AuthState = {
-  user: null,
-  tokens: null,
-  isAuthenticated: false,
-  isLoading: true,
-  error: null,
-};
-
-// Action types
-type AuthAction =
-  | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; tokens: AuthTokens } }
-  | { type: 'AUTH_ERROR'; payload: string }
-  | { type: 'LOGOUT' }
-  | { type: 'CLEAR_ERROR' };
-
-// Auth reducer
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case 'AUTH_START':
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
-      };
-    case 'AUTH_SUCCESS':
-      return {
-        ...state,
-        user: action.payload.user,
-        tokens: action.payload.tokens,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      };
-    case 'AUTH_ERROR':
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload,
-      };
-    case 'LOGOUT':
-      return {
-        ...initialState,
-        isLoading: false,
-      };
-    case 'CLEAR_ERROR':
-      return {
-        ...state,
-        error: null,
-      };
-    default:
-      return state;
-  }
-};
-
-// Create auth context
-interface AuthContextType extends AuthState {
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
-  logout: () => void;
-  clearError: () => void;
-  checkRole: (roles: UserRole[]) => boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import AuthContext from './AuthContext';
+import { authReducer, initialState } from './authReducer';
 
 // Auth provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -207,11 +142,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Custom hook for using auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export default AuthProvider;

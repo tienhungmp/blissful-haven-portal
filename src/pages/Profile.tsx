@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { User, Mail, Phone, MapPin, Shield, Calendar } from "lucide-react";
 import {
