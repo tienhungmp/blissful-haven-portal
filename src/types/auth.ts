@@ -23,6 +23,7 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   confirmPassword: string;
+  role?: UserRole; // Thêm trường role để chọn vai trò
 }
 
 export interface AuthState {
