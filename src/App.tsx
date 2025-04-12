@@ -11,6 +11,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Booking from "./pages/Booking"; 
 import Reviews from "./pages/Reviews";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/booking" element={<Booking />} />
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />

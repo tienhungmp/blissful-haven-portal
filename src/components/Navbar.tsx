@@ -56,6 +56,9 @@ const Navbar = () => {
           <Link to="/reviews" className="text-sm font-medium hover:text-brand-blue transition-colors">
             Đánh giá
           </Link>
+          <Link to="/about" className="text-sm font-medium hover:text-brand-blue transition-colors">
+            Giới thiệu
+          </Link>
           <Link to="/contact" className="text-sm font-medium hover:text-brand-blue transition-colors">
             Liên hệ
           </Link>
@@ -154,6 +157,13 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Đánh giá
+              </Link>
+              <Link 
+                to="/about" 
+                className="text-lg font-medium py-2 hover:text-brand-blue transition-colors"
+                onClick={toggleMenu}
+              >
+                Giới thiệu
               </Link>
               <Link 
                 to="/contact" 
