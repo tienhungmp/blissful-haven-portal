@@ -1,8 +1,15 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 
 const HeroBanner: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleExplore = () => {
+    navigate('/search');
+  };
+
   return (
     <div className="relative h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
       {/* Background Image */}
@@ -27,6 +34,7 @@ const HeroBanner: React.FC = () => {
         <Button 
           size="lg"
           className="mt-8 bg-brand-red hover:bg-brand-red/90 text-white px-8 py-6 text-lg"
+          onClick={handleExplore}
         >
           Khám phá ngay
         </Button>
