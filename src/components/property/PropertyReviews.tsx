@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/auth';
 
 interface Review {
   id: string;
@@ -22,26 +23,24 @@ interface PropertyReviewsProps {
 
 const PropertyReviews = ({ rating, reviewCount, reviews }: PropertyReviewsProps) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [newReview, setNewReview] = useState({ name: '', comment: '', rating: 5 });
+  const [newReview, setNewReview] = useState({ comment: '', rating: 5 });
+  const { user, isAuthenticated } = useAuth();
 
-  const handleRatingChange = (rating) => {
+  const handleRatingChange = (rating: number) => {
     setNewReview(prev => ({ ...prev, rating }));
   };
 
-  const handleCommentChange = (e) => {
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewReview(prev => ({ ...prev, comment: e.target.value }));
   };
 
-  const handleNameChange = (e) => {
-    setNewReview(prev => ({ ...prev, name: e.target.value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newReview.name.trim()) {
-      toast.error("Vui lòng nhập tên của bạn");
+    if (!isAuthenticated || !user) {
+      toast.error("Vui lòng đăng nhập để viết đánh giá");
       return;
     }
+
     if (!newReview.comment.trim()) {
       toast.error("Vui lòng nhập nhận xét của bạn");
       return;
@@ -51,7 +50,7 @@ const PropertyReviews = ({ rating, reviewCount, reviews }: PropertyReviewsProps)
     toast.success("Cảm ơn bạn đã gửi đánh giá!");
     
     // Reset form và đóng form
-    setNewReview({ name: '', comment: '', rating: 5 });
+    setNewReview({ comment: '', rating: 5 });
     setShowReviewForm(false);
   };
 
@@ -62,12 +61,24 @@ const PropertyReviews = ({ rating, reviewCount, reviews }: PropertyReviewsProps)
         <span className="text-lg font-medium">{rating.toFixed(1)}</span>
         <span className="text-muted-foreground">· {reviewCount} đánh giá</span>
         
-        {!showReviewForm && (
+        {isAuthenticated ? (
+          !showReviewForm && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="ml-auto"
+              onClick={() => setShowReviewForm(true)}
+            >
+              <MessageSquarePlus className="h-4 w-4 mr-2" />
+              Viết đánh giá
+            </Button>
+          )
+        ) : (
           <Button 
             variant="outline" 
             size="sm" 
             className="ml-auto"
-            onClick={() => setShowReviewForm(true)}
+            onClick={() => toast.error("Vui lòng đăng nhập để viết đánh giá")}
           >
             <MessageSquarePlus className="h-4 w-4 mr-2" />
             Viết đánh giá
@@ -75,7 +86,7 @@ const PropertyReviews = ({ rating, reviewCount, reviews }: PropertyReviewsProps)
         )}
       </div>
       
-      {showReviewForm && (
+      {showReviewForm && isAuthenticated && (
         <div className="border rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Viết đánh giá của bạn</h3>
@@ -90,17 +101,6 @@ const PropertyReviews = ({ rating, reviewCount, reviews }: PropertyReviewsProps)
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Tên của bạn</Label>
-              <input
-                id="name"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Nhập tên của bạn"
-                value={newReview.name}
-                onChange={handleNameChange}
-              />
-            </div>
-            
             <div>
               <Label htmlFor="rating">Đánh giá</Label>
               <div className="flex items-center gap-2">
