@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PropertyCard from '@/components/PropertyCard';
 import { Property } from '@/types/property';
@@ -14,20 +13,46 @@ import {
 } from "@/components/ui/pagination";
 
 interface SearchResultsProps {
-  properties: Property[];
+  location?: string;
+  checkIn?: Date;
+  checkOut?: Date;
+  priceRange?: [number, number];
+  selectedTypes?: string[];
+  selectedAmenities?: string[];
+  minRating?: number;
 }
 
 const ITEMS_PER_PAGE = 9;
 
-const SearchResults: React.FC<SearchResultsProps> = () => {
+const SearchResults: React.FC<SearchResultsProps> = ({
+  location,
+  checkIn,
+  checkOut,
+  priceRange,
+  selectedTypes,
+  selectedAmenities,
+  minRating,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error } = useHomestays(currentPage, ITEMS_PER_PAGE);
+  const [sortBy, setSortBy] = useState<string>('recommended');
+
+  const filters = {
+    location,
+    checkIn,
+    checkOut,
+    minPrice: priceRange?.[0],
+    maxPrice: priceRange?.[1],
+    types: selectedTypes?.filter(type => type),
+    amenities: selectedAmenities?.filter(amenity => amenity),
+    minRating,
+  };
+
+  const { data, isLoading, error } = useHomestays(currentPage, ITEMS_PER_PAGE, filters);
   
   const properties = data?.data || [];
   const totalItems = data?.total || 0;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-  // Generate page numbers array
   const getPageNumbers = () => {
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -53,6 +78,10 @@ const SearchResults: React.FC<SearchResultsProps> = () => {
     );
   }
 
+  const handleSort = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(event.target.value);
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-4 mb-6">
@@ -60,7 +89,11 @@ const SearchResults: React.FC<SearchResultsProps> = () => {
           <div>
             <h3 className="font-semibold">{totalItems} kết quả tìm thấy</h3>
           </div>
-          <select className="border rounded px-3 py-1.5 text-sm">
+          <select 
+            className="border rounded px-3 py-1.5 text-sm"
+            value={sortBy}
+            onChange={handleSort}
+          >
             <option value="recommended">Đề xuất</option>
             <option value="price-low">Giá thấp đến cao</option>
             <option value="price-high">Giá cao đến thấp</option>
