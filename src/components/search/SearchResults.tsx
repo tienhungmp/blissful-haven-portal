@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import PropertyCard from '@/components/PropertyCard';
 import { Property } from '@/types/property';
+import { useHomestays } from '@/hooks/useHomestays';
+import { Loader2 } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -17,14 +19,13 @@ interface SearchResultsProps {
 
 const ITEMS_PER_PAGE = 9;
 
-const SearchResults: React.FC<SearchResultsProps> = ({ properties }) => {
+const SearchResults: React.FC<SearchResultsProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading, error } = useHomestays(currentPage, ITEMS_PER_PAGE);
   
-  // Calculate pagination values
-  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentProperties = properties.slice(startIndex, endIndex);
+  const properties = data?.data || [];
+  const totalItems = data?.total || 0;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   // Generate page numbers array
   const getPageNumbers = () => {
@@ -35,12 +36,29 @@ const SearchResults: React.FC<SearchResultsProps> = ({ properties }) => {
     return pages;
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-lg shadow p-8 text-center">
+        <h3 className="text-lg font-semibold mb-2">Đã có lỗi xảy ra</h3>
+        <p className="text-muted-foreground">Vui lòng thử lại sau.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="font-semibold">{properties.length} kết quả tìm thấy</h3>
+            <h3 className="font-semibold">{totalItems} kết quả tìm thấy</h3>
           </div>
           <select className="border rounded px-3 py-1.5 text-sm">
             <option value="recommended">Đề xuất</option>
@@ -51,10 +69,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ properties }) => {
         </div>
       </div>
       
-      {currentProperties.length > 0 ? (
+      {properties.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentProperties.map(property => (
+            {properties.map(property => (
               <PropertyCard key={property.id} {...property} />
             ))}
           </div>
