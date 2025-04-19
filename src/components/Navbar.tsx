@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,6 @@ const Navbar = () => {
           <span className="text-2xl font-bold text-brand-blue">BlissStay</span>
         </Link>
         
-        {/* Mobile menu button */}
         <button 
           className="block md:hidden" 
           onClick={toggleMenu}
@@ -42,19 +40,12 @@ const Navbar = () => {
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
         
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <Link to="/" className="text-sm font-medium hover:text-brand-blue transition-colors">
             Trang chủ
           </Link>
           <Link to="/search" className="text-sm font-medium hover:text-brand-blue transition-colors">
             Tìm kiếm
-          </Link>
-          <Link to="/booking" className="text-sm font-medium hover:text-brand-blue transition-colors">
-            Đặt phòng
-          </Link>
-          <Link to="/reviews" className="text-sm font-medium hover:text-brand-blue transition-colors">
-            Đánh giá
           </Link>
           <Link to="/about" className="text-sm font-medium hover:text-brand-blue transition-colors">
             Giới thiệu
@@ -63,14 +54,12 @@ const Navbar = () => {
             Liên hệ
           </Link>
           
-          {/* Render admin link for admins */}
           {isAuthenticated && user?.role === 'admin' && (
             <Link to="/admin" className="text-sm font-medium text-yellow-600 hover:text-yellow-700 transition-colors">
               Quản trị
             </Link>
           )}
           
-          {/* Render host dashboard for hosts */}
           {isAuthenticated && (user?.role === 'host' || user?.role === 'admin') && (
             <Link to="/host" className="text-sm font-medium text-green-600 hover:text-green-700 transition-colors">
               Quản lý chỗ nghỉ
@@ -78,7 +67,6 @@ const Navbar = () => {
           )}
         </nav>
         
-        {/* Auth buttons or User menu */}
         <div className="hidden md:flex items-center gap-2">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -126,7 +114,6 @@ const Navbar = () => {
           )}
         </div>
         
-        {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="fixed inset-0 top-16 bg-white z-50 flex flex-col md:hidden animate-fade-in">
             <nav className="flex flex-col gap-4 p-6">
@@ -145,20 +132,6 @@ const Navbar = () => {
                 Tìm kiếm
               </Link>
               <Link 
-                to="/booking" 
-                className="text-lg font-medium py-2 hover:text-brand-blue transition-colors"
-                onClick={toggleMenu}
-              >
-                Đặt phòng
-              </Link>
-              <Link 
-                to="/reviews" 
-                className="text-lg font-medium py-2 hover:text-brand-blue transition-colors"
-                onClick={toggleMenu}
-              >
-                Đánh giá
-              </Link>
-              <Link 
                 to="/about" 
                 className="text-lg font-medium py-2 hover:text-brand-blue transition-colors"
                 onClick={toggleMenu}
@@ -173,7 +146,6 @@ const Navbar = () => {
                 Liên hệ
               </Link>
               
-              {/* Conditional admin link */}
               {isAuthenticated && user?.role === 'admin' && (
                 <Link 
                   to="/admin" 
@@ -184,7 +156,6 @@ const Navbar = () => {
                 </Link>
               )}
               
-              {/* Conditional host link */}
               {isAuthenticated && (user?.role === 'host' || user?.role === 'admin') && (
                 <Link 
                   to="/host" 

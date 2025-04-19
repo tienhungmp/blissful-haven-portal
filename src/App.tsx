@@ -8,8 +8,6 @@ import { AuthProvider } from "@/contexts/auth";
 import Index from "./pages/Index";
 import Search from "./pages/Search";
 import PropertyDetail from "./pages/PropertyDetail";
-import Booking from "./pages/Booking"; 
-import Reviews from "./pages/Reviews";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import Login from "./pages/Login";
@@ -33,8 +31,6 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<Search />} />
             <Route path="/property/:id" element={<PropertyDetail />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/reviews" element={<Reviews />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
@@ -47,7 +43,6 @@ const App = () => (
                 <Profile />
               </ProtectedRoute>
             } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
