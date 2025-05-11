@@ -16,6 +16,7 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import HostDashboard from "./pages/HostDashboard";
 import NotFound from "./pages/NotFound";
+import PaymentMethod from "./pages/PaymentMethod";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,11 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/payment-method" element={
+              <ProtectedRoute>
+                <PaymentMethod />
+              </ProtectedRoute>
+            } />
             <Route path="/bookings" element={
               <ProtectedRoute>
                 <Profile />

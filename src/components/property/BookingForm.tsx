@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Star, CalendarIcon, Users, AlertCircle } from 'lucide-react';
@@ -15,9 +14,10 @@ interface BookingFormProps {
   rating: number;
   maxGuests: number;
   propertyId: string;
+  propertyName: string;
 }
 
-const BookingForm = ({ price, rating, maxGuests, propertyId }: BookingFormProps) => {
+const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: BookingFormProps) => {
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined);
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined);
   const [guestCount, setGuestCount] = useState(1);
@@ -83,8 +83,21 @@ const BookingForm = ({ price, rating, maxGuests, propertyId }: BookingFormProps)
       const response = await createData('/api/bookings', bookingData);
       
       if (response.success) {
-        toast.success('Đặt phòng thành công. Vui lòng chờ xác nhận từ chủ homestay.');
-        // You could redirect to a booking confirmation page here if needed
+        toast.success('Đặt phòng thành công!');
+        
+        // Navigate to payment method page
+        navigate('/payment-method', {
+          state: {
+            bookingDetails: {
+              propertyId,
+              propertyName,
+              checkIn: format(checkIn, 'dd/MM/yyyy'),
+              checkOut: format(checkOut, 'dd/MM/yyyy'),
+              guestCount,
+              totalPrice
+            }
+          }
+        });
       } else {
         if (response.error?.includes('conflict')) {
           toast.error('Ngày bạn chọn đã có người đặt rồi. Vui lòng chọn ngày khác.');

@@ -182,6 +182,7 @@ const PropertyDetail = () => {
               rating={property.rating}
               maxGuests={property.guests}
               propertyId={property.id}
+              propertyName={property.name}
             />
           </div>
         </div>
