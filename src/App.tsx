@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
+import BookingHistory from "./pages/BookingHistory";
 import HostDashboard from "./pages/HostDashboard";
 import NotFound from "./pages/NotFound";
 import PaymentMethod from "./pages/PaymentMethod";
@@ -40,6 +41,11 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/booking-history" element={
+              <ProtectedRoute>
+                <BookingHistory />
+              </ProtectedRoute>
+            } />
             <Route path="/payment-method" element={
               <ProtectedRoute>
                 <PaymentMethod />
@@ -52,7 +58,7 @@ const App = () => (
             } />
             <Route path="/bookings" element={
               <ProtectedRoute>
-                <Profile />
+                <BookingHistory />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
