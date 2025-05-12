@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -55,16 +54,26 @@ const PaymentMethod = () => {
       // Show success message
       toast.success('Thanh toán thành công!');
       
-      // Navigate to success page or back to home
-      navigate('/', { 
+      // Get payment method name for display
+      const paymentMethodNames: Record<string, string> = {
+        credit_card: 'Thẻ tín dụng/ghi nợ',
+        e_wallet: 'Ví điện tử',
+        crypto: 'Tiền điện tử'
+      };
+      
+      // Navigate to success page with payment details
+      navigate('/payment-success', { 
         state: { 
-          paymentSuccess: true,
+          paymentDetails: {
+            ...bookingDetails,
+            paymentMethod: paymentMethodNames[selectedMethod],
+            paymentDate: new Date().toLocaleDateString('vi-VN')
+          },
           bookingId: 'BOOKING-' + Math.floor(Math.random() * 1000000)
         }
       });
     } catch (error) {
       toast.error('Có lỗi xảy ra khi xử lý thanh toán');
-    } finally {
       setIsProcessing(false);
     }
   };

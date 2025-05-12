@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import HostDashboard from "./pages/HostDashboard";
 import NotFound from "./pages/NotFound";
 import PaymentMethod from "./pages/PaymentMethod";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,11 @@ const App = () => (
             <Route path="/payment-method" element={
               <ProtectedRoute>
                 <PaymentMethod />
+              </ProtectedRoute>
+            } />
+            <Route path="/payment-success" element={
+              <ProtectedRoute>
+                <PaymentSuccess />
               </ProtectedRoute>
             } />
             <Route path="/bookings" element={
