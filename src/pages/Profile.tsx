@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Mock booking data
 const mockBookings = [
@@ -72,6 +73,33 @@ const mockBookings = [
     totalPrice: 12800000,
     status: "upcoming",
     imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    id: "BOOK-65432",
+    propertyName: "Homestay Tam Cốc Ninh Bình",
+    checkIn: "05/07/2024",
+    checkOut: "10/07/2024",
+    totalPrice: 3200000,
+    status: "upcoming",
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    id: "BOOK-78901",
+    propertyName: "Khách sạn Continental Sài Gòn",
+    checkIn: "20/08/2024",
+    checkOut: "25/08/2024",
+    totalPrice: 7500000,
+    status: "upcoming",
+    imageUrl: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80&w=1000&auto=format&fit=crop"
+  },
+  {
+    id: "BOOK-23456",
+    propertyName: "Flamingo Đại Lải Resort",
+    checkIn: "10/09/2024",
+    checkOut: "15/09/2024",
+    totalPrice: 9800000,
+    status: "upcoming",
+    imageUrl: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1000&auto=format&fit=crop"
   }
 ];
 
@@ -97,6 +125,11 @@ const Profile = () => {
     logout();
     navigate('/');
   };
+
+  // Determine if we need scrolling (more than 7 items)
+  const needsScrolling = mockBookings.length > 7;
+  const maxTableHeight = needsScrolling ? "400px" : "auto";
+  const maxCardsHeight = needsScrolling ? "500px" : "auto";
 
   return (
     <ProtectedRoute>
@@ -191,107 +224,113 @@ const Profile = () => {
                     <div className="space-y-4">
                       {/* Desktop view with table */}
                       <div className="hidden md:block">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Mã đặt phòng</TableHead>
-                              <TableHead>Chỗ ở</TableHead>
-                              <TableHead>Ngày</TableHead>
-                              <TableHead>Giá</TableHead>
-                              <TableHead>Trạng thái</TableHead>
-                              <TableHead>Chi tiết</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {mockBookings.map((booking) => (
-                              <TableRow key={booking.id}>
-                                <TableCell className="font-medium">{booking.id}</TableCell>
-                                <TableCell>{booking.propertyName}</TableCell>
-                                <TableCell>{booking.checkIn} - {booking.checkOut}</TableCell>
-                                <TableCell>{booking.totalPrice.toLocaleString('vi-VN')}đ</TableCell>
-                                <TableCell>
-                                  <Badge className={getStatusColor(booking.status)}>
-                                    {booking.status === 'completed' ? 'Hoàn thành' : 
-                                     booking.status === 'cancelled' ? 'Đã hủy' : 'Sắp tới'}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-8 w-8 p-0"
-                                    onClick={() => navigate('/payment-success', { 
-                                      state: { 
-                                        paymentDetails: {
-                                          propertyName: booking.propertyName,
-                                          checkIn: booking.checkIn,
-                                          checkOut: booking.checkOut,
-                                          totalPrice: booking.totalPrice,
-                                          guestCount: 2,
-                                          paymentMethod: "Thẻ tín dụng"
-                                        },
-                                        bookingId: booking.id
-                                      } 
-                                    })}
-                                  >
-                                    <ExternalLink className="h-4 w-4" />
-                                  </Button>
-                                </TableCell>
+                        <ScrollArea className={needsScrolling ? "h-[400px]" : ""}>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Mã đặt phòng</TableHead>
+                                <TableHead>Chỗ ở</TableHead>
+                                <TableHead>Ngày</TableHead>
+                                <TableHead>Giá</TableHead>
+                                <TableHead>Trạng thái</TableHead>
+                                <TableHead>Chi tiết</TableHead>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                            </TableHeader>
+                            <TableBody>
+                              {mockBookings.map((booking) => (
+                                <TableRow key={booking.id}>
+                                  <TableCell className="font-medium">{booking.id}</TableCell>
+                                  <TableCell>{booking.propertyName}</TableCell>
+                                  <TableCell>{booking.checkIn} - {booking.checkOut}</TableCell>
+                                  <TableCell>{booking.totalPrice.toLocaleString('vi-VN')}đ</TableCell>
+                                  <TableCell>
+                                    <Badge className={getStatusColor(booking.status)}>
+                                      {booking.status === 'completed' ? 'Hoàn thành' : 
+                                       booking.status === 'cancelled' ? 'Đã hủy' : 'Sắp tới'}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => navigate('/payment-success', { 
+                                        state: { 
+                                          paymentDetails: {
+                                            propertyName: booking.propertyName,
+                                            checkIn: booking.checkIn,
+                                            checkOut: booking.checkOut,
+                                            totalPrice: booking.totalPrice,
+                                            guestCount: 2,
+                                            paymentMethod: "Thẻ tín dụng"
+                                          },
+                                          bookingId: booking.id
+                                        } 
+                                      })}
+                                    >
+                                      <ExternalLink className="h-4 w-4" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </ScrollArea>
                       </div>
                       
                       {/* Mobile view with cards */}
-                      <div className="grid gap-4 md:hidden">
-                        {mockBookings.map((booking) => (
-                          <Card key={booking.id} className="overflow-hidden">
-                            <div className="flex">
-                              <div className="w-1/3">
-                                <img 
-                                  src={booking.imageUrl} 
-                                  alt={booking.propertyName}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                              <div className="w-2/3 p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                  <h3 className="font-semibold text-sm line-clamp-1">{booking.propertyName}</h3>
-                                  <Badge className={getStatusColor(booking.status)}>
-                                    {booking.status === 'completed' ? 'Hoàn thành' : 
-                                     booking.status === 'cancelled' ? 'Đã hủy' : 'Sắp tới'}
-                                  </Badge>
+                      <div className="md:hidden">
+                        <ScrollArea className={needsScrolling ? "h-[500px]" : ""}>
+                          <div className="grid gap-4">
+                            {mockBookings.map((booking) => (
+                              <Card key={booking.id} className="overflow-hidden">
+                                <div className="flex">
+                                  <div className="w-1/3">
+                                    <img 
+                                      src={booking.imageUrl} 
+                                      alt={booking.propertyName}
+                                      className="h-full w-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="w-2/3 p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <h3 className="font-semibold text-sm line-clamp-1">{booking.propertyName}</h3>
+                                      <Badge className={getStatusColor(booking.status)}>
+                                        {booking.status === 'completed' ? 'Hoàn thành' : 
+                                         booking.status === 'cancelled' ? 'Đã hủy' : 'Sắp tới'}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mb-1">Mã: {booking.id}</p>
+                                    <p className="text-xs text-gray-500 mb-2">{booking.checkIn} - {booking.checkOut}</p>
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-medium text-sm">{booking.totalPrice.toLocaleString('vi-VN')}đ</span>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="h-7 text-xs"
+                                        onClick={() => navigate('/payment-success', { 
+                                          state: { 
+                                            paymentDetails: {
+                                              propertyName: booking.propertyName,
+                                              checkIn: booking.checkIn,
+                                              checkOut: booking.checkOut,
+                                              totalPrice: booking.totalPrice,
+                                              guestCount: 2,
+                                              paymentMethod: "Thẻ tín dụng"
+                                            },
+                                            bookingId: booking.id
+                                          } 
+                                        })}
+                                      >
+                                        Chi tiết
+                                      </Button>
+                                    </div>
+                                  </div>
                                 </div>
-                                <p className="text-xs text-gray-500 mb-1">Mã: {booking.id}</p>
-                                <p className="text-xs text-gray-500 mb-2">{booking.checkIn} - {booking.checkOut}</p>
-                                <div className="flex justify-between items-center">
-                                  <span className="font-medium text-sm">{booking.totalPrice.toLocaleString('vi-VN')}đ</span>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-7 text-xs"
-                                    onClick={() => navigate('/payment-success', { 
-                                      state: { 
-                                        paymentDetails: {
-                                          propertyName: booking.propertyName,
-                                          checkIn: booking.checkIn,
-                                          checkOut: booking.checkOut,
-                                          totalPrice: booking.totalPrice,
-                                          guestCount: 2,
-                                          paymentMethod: "Thẻ tín dụng"
-                                        },
-                                        bookingId: booking.id
-                                      } 
-                                    })}
-                                  >
-                                    Chi tiết
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
+                              </Card>
+                            ))}
+                          </div>
+                        </ScrollArea>
                       </div>
                     </div>
                   ) : (
