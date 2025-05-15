@@ -18,7 +18,10 @@ import {
   Star,
   BarChart,
   DollarSign,
-  Package
+  Package,
+  ThumbsUp,
+  ThumbsDown,
+  Meh
 } from "lucide-react";
 import {
   Tabs,
@@ -60,6 +63,7 @@ import {
   Line,
 } from "recharts";
 import { toast } from "sonner";
+import { Review } from "@/types/property";
 
 // Sample data
 const revenueData = [
@@ -90,10 +94,13 @@ const bookings = [
   { id: "B1004", property: "Nhà vườn Hội An", guest: "Phạm Thị D", checkIn: "15/10/2023", checkOut: "20/10/2023", guests: 3, status: "canceled" },
 ];
 
-const reviews = [
-  { id: 1, property: "Villa Đà Lạt View Đồi", guest: "Nguyễn Văn A", date: "16/09/2023", rating: 5, content: "Căn villa rất đẹp, view tuyệt vời, chủ nhà thân thiện." },
-  { id: 2, property: "Căn hộ Seaside", guest: "Trần Thị B", date: "23/09/2023", rating: 4, content: "Vị trí thuận tiện, gần biển, phòng sạch sẽ." },
-  { id: 3, property: "Villa Đà Lạt View Đồi", guest: "Hoàng Văn E", date: "12/09/2023", rating: 3, content: "Phòng ổn, nhưng hơi ồn vào buổi tối." },
+const reviews: Review[] = [
+  { id: 1, property: "Villa Đà Lạt View Đồi", guest: "Nguyễn Văn A", date: "16/09/2023", rating: 5, content: "Căn villa rất đẹp, view tuyệt vời, chủ nhà thân thiện.", sentiment: "positive" },
+  { id: 2, property: "Căn hộ Seaside", guest: "Trần Thị B", date: "23/09/2023", rating: 4, content: "Vị trí thuận tiện, gần biển, phòng sạch sẽ.", sentiment: "positive" },
+  { id: 3, property: "Villa Đà Lạt View Đồi", guest: "Hoàng Văn E", date: "12/09/2023", rating: 3, content: "Phòng ổn, nhưng hơi ồn vào buổi tối.", sentiment: "neutral" },
+  { id: 4, property: "Căn hộ Seaside", guest: "Lý Thị F", date: "18/10/2023", rating: 2, content: "Phòng không sạch sẽ như hình ảnh, nhân viên phục vụ thái độ.", sentiment: "negative" },
+  { id: 5, property: "Nhà vườn Hội An", guest: "Trần Văn G", date: "25/10/2023", rating: 5, content: "Không gian rất đẹp và yên tĩnh, chủ nhà thân thiện, nấu ăn ngon.", sentiment: "positive" },
+  { id: 6, property: "Nhà vườn Hội An", guest: "Phạm Thị H", date: "01/11/2023", rating: 1, content: "Quá tệ! Phòng bẩn, dịch vụ kém, giá cả không xứng đáng.", sentiment: "negative" },
 ];
 
 const HostDashboard = () => {
@@ -103,6 +110,7 @@ const HostDashboard = () => {
   const [propertySearchQuery, setPropertySearchQuery] = useState("");
   const [bookingSearchQuery, setBookingSearchQuery] = useState("");
   const [bookingStatus, setBookingStatus] = useState("");
+  const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
 
   // Handle property operations
   const handleAddProperty = () => {
@@ -130,6 +138,25 @@ const HostDashboard = () => {
     toast.success(`Đã gửi email xác nhận cho đơn đặt phòng: ${id}`);
   };
 
+  // Handle showing reviews for a specific property
+  const handleShowPropertyReviews = (propertyName: string) => {
+    setSelectedProperty(propertyName);
+  };
+
+  // Get sentiment icon
+  const getSentimentIcon = (sentiment: string | undefined) => {
+    switch (sentiment) {
+      case 'positive':
+        return <ThumbsUp className="h-4 w-4 text-green-500" />;
+      case 'negative':
+        return <ThumbsDown className="h-4 w-4 text-red-500" />;
+      case 'neutral':
+        return <Meh className="h-4 w-4 text-amber-500" />;
+      default:
+        return null;
+    }
+  };
+
   // Filter properties
   const filteredProperties = properties.filter(property =>
     property.name.toLowerCase().includes(propertySearchQuery.toLowerCase()) ||
@@ -144,6 +171,11 @@ const HostDashboard = () => {
     const matchesStatus = bookingStatus ? booking.status === bookingStatus : true;
     return matchesSearch && matchesStatus;
   });
+
+  // Filter reviews based on selected property
+  const filteredReviews = selectedProperty 
+    ? reviews.filter(review => review.property === selectedProperty)
+    : reviews;
 
   return (
     <ProtectedRoute allowedRoles={['host', 'admin']}>
@@ -500,18 +532,24 @@ const HostDashboard = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {reviews.length > 0 ? (
+                  {filteredReviews.length > 0 ? (
                     <div className="space-y-6">
-                      {reviews.map((review) => (
+                      {filteredReviews.map((review) => (
                         <div key={review.id} className="bg-gray-50 rounded-lg p-4">
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <h3 className="font-medium">{review.guest}</h3>
                               <p className="text-sm text-gray-500">{review.date} - {review.property}</p>
                             </div>
-                            <div className="flex items-center bg-white px-2 py-1 rounded-full">
-                              <span className="mr-1 font-medium">{review.rating}</span>
-                              <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center bg-white px-2 py-1 rounded-full">
+                                <span className="mr-1 font-medium">{review.rating}</span>
+                                <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                              </div>
+                              <div className="flex items-center bg-white px-2 py-1 rounded-full">
+                                {getSentimentIcon(review.sentiment)}
+                                <span className="ml-1 text-xs capitalize">{review.sentiment}</span>
+                              </div>
                             </div>
                           </div>
                           <p className="text-gray-600">{review.content}</p>
@@ -521,7 +559,12 @@ const HostDashboard = () => {
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <Star className="mx-auto h-12 w-12 text-gray-300 mb-2" />
-                      <p>Chưa có đánh giá nào</p>
+                      <p>Chưa có đánh giá nào {selectedProperty && `cho ${selectedProperty}`}</p>
+                      {selectedProperty && (
+                        <Button variant="outline" className="mt-4" onClick={() => setSelectedProperty(null)}>
+                          Xem tất cả đánh giá
+                        </Button>
+                      )}
                     </div>
                   )}
                 </CardContent>
@@ -529,13 +572,30 @@ const HostDashboard = () => {
 
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Thống kê đánh giá</CardTitle>
-                  <CardDescription>Trung bình đánh giá theo từng chỗ nghỉ</CardDescription>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                    <div>
+                      <CardTitle>Thống kê đánh giá</CardTitle>
+                      <CardDescription>
+                        {selectedProperty 
+                          ? `Đánh giá cho ${selectedProperty}` 
+                          : 'Trung bình đánh giá theo từng chỗ nghỉ'}
+                      </CardDescription>
+                    </div>
+                    {selectedProperty && (
+                      <Button variant="outline" size="sm" onClick={() => setSelectedProperty(null)} className="mt-2 sm:mt-0">
+                        Quay lại tất cả
+                      </Button>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {properties.map((property) => (
-                      <div key={property.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                      <div 
+                        key={property.id} 
+                        className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleShowPropertyReviews(property.name)}
+                      >
                         <div>
                           <h3 className="font-medium">{property.name}</h3>
                           <p className="text-sm text-gray-500">{property.location}</p>

@@ -16,17 +16,17 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Flag, Search, Star } from "lucide-react";
+import { Eye, EyeOff, Flag, Search, Star, ThumbsUp, ThumbsDown, Meh } from "lucide-react";
 import { toast } from "sonner";
 
 export function AdminReviews() {
   // Sample data - in a real app, this would come from an API
   const [reviews, setReviews] = useState([
-    { id: 1, property: "Villa Green Garden", user: "Nguyễn Văn A", date: "10/08/2023", rating: 5, content: "Tuyệt vời! Dịch vụ chất lượng, view đẹp, nhân viên thân thiện.", status: "visible" },
-    { id: 2, property: "Homestay Mountainview", user: "Trần Thị B", date: "05/08/2023", rating: 4, content: "Không gian thoáng đãng, sạch sẽ. Tuy nhiên, hơi xa trung tâm.", status: "visible" },
-    { id: 3, property: "Khách sạn Panorama", user: "Lê Văn C", date: "28/07/2023", rating: 2, content: "Phòng không sạch sẽ, dịch vụ kém, giá quá cao so với chất lượng.", status: "visible" },
-    { id: 4, property: "Resort Ocean Pearl", user: "Phạm Thị D", date: "20/07/2023", rating: 5, content: "Resort tuyệt đẹp, bãi biển riêng, nhân viên chu đáo.", status: "visible" },
-    { id: 5, property: "Khách sạn Sunlight", user: "Hoàng Văn E", date: "15/07/2023", rating: 1, content: "Dịch vụ tệ, ồn ào, không đúng như quảng cáo. Rất thất vọng.", status: "hidden" },
+    { id: 1, property: "Villa Green Garden", user: "Nguyễn Văn A", date: "10/08/2023", rating: 5, content: "Tuyệt vời! Dịch vụ chất lượng, view đẹp, nhân viên thân thiện.", status: "visible", sentiment: "positive" },
+    { id: 2, property: "Homestay Mountainview", user: "Trần Thị B", date: "05/08/2023", rating: 4, content: "Không gian thoáng đãng, sạch sẽ. Tuy nhiên, hơi xa trung tâm.", status: "visible", sentiment: "positive" },
+    { id: 3, property: "Khách sạn Panorama", user: "Lê Văn C", date: "28/07/2023", rating: 2, content: "Phòng không sạch sẽ, dịch vụ kém, giá quá cao so với chất lượng.", status: "visible", sentiment: "negative" },
+    { id: 4, property: "Resort Ocean Pearl", user: "Phạm Thị D", date: "20/07/2023", rating: 5, content: "Resort tuyệt đẹp, bãi biển riêng, nhân viên chu đáo.", status: "visible", sentiment: "positive" },
+    { id: 5, property: "Khách sạn Sunlight", user: "Hoàng Văn E", date: "15/07/2023", rating: 1, content: "Dịch vụ tệ, ồn ào, không đúng như quảng cáo. Rất thất vọng.", status: "hidden", sentiment: "negative" },
   ]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,6 +58,34 @@ export function AdminReviews() {
            review.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
            review.content.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  // Get sentiment icon based on sentiment value
+  const getSentimentIcon = (sentiment: string | undefined) => {
+    switch (sentiment) {
+      case 'positive':
+        return <ThumbsUp className="h-4 w-4 text-green-500" />;
+      case 'negative':
+        return <ThumbsDown className="h-4 w-4 text-red-500" />;
+      case 'neutral':
+        return <Meh className="h-4 w-4 text-amber-500" />;
+      default:
+        return null;
+    }
+  };
+
+  // Get sentiment text class
+  const getSentimentTextClass = (sentiment: string | undefined) => {
+    switch (sentiment) {
+      case 'positive':
+        return 'text-green-800';
+      case 'negative':
+        return 'text-red-800';
+      case 'neutral':
+        return 'text-amber-800';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -92,6 +120,7 @@ export function AdminReviews() {
                 <TableHead>Người dùng</TableHead>
                 <TableHead>Ngày</TableHead>
                 <TableHead>Đánh giá</TableHead>
+                <TableHead>Cảm xúc</TableHead>
                 <TableHead>Nội dung</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>Thao tác</TableHead>
@@ -108,6 +137,14 @@ export function AdminReviews() {
                     <div className="flex items-center">
                       <span className="mr-1">{review.rating}</span>
                       <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      {getSentimentIcon(review.sentiment)}
+                      <span className={`text-xs capitalize ${getSentimentTextClass(review.sentiment)}`}>
+                        {review.sentiment}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell className="max-w-xs truncate" title={review.content}>
