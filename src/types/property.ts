@@ -1,4 +1,3 @@
-
 export interface Property {
   id: string;
   name: string;
@@ -9,7 +8,7 @@ export interface Property {
   type: string;
 }
 
-export interface Review {
+export type Review = {
   id: number;
   property: string;
   guest: string;
@@ -17,4 +16,12 @@ export interface Review {
   rating: number;
   content: string;
   sentiment?: 'positive' | 'negative' | 'neutral';
+};
+
+export interface RevenueDataPoint {
+  name: string;
+  revenue: number;
+  date?: Date;
 }
+
+export type PeriodType = 'day' | 'month' | 'year';

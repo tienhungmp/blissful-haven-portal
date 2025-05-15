@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -51,19 +50,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  BarChart as RechartsBarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from "recharts";
 import { toast } from "sonner";
 import { Review } from "@/types/property";
+import RevenueChart from "@/components/dashboard/RevenueChart";
 
 // Sample data
 const revenueData = [
@@ -261,34 +250,8 @@ const HostDashboard = () => {
                 </Card>
               </div>
 
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle>Doanh thu theo tháng (Triệu VND)</CardTitle>
-                  <CardDescription>Biểu đồ doanh thu theo tháng trong năm 2023</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={revenueData}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip formatter={(value: number) => [`${value/1000}M VND`, 'Doanh thu']} />
-                        <Line 
-                          type="monotone" 
-                          dataKey="revenue" 
-                          stroke="#4f46e5" 
-                          strokeWidth={2}
-                          activeDot={{ r: 8 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Replace old revenue chart with our new component */}
+              <RevenueChart />
             </TabsContent>
 
             {/* Properties Content */}
