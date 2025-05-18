@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Star, CalendarIcon, Users, AlertCircle } from 'lucide-react';
@@ -8,6 +9,7 @@ import { useAuth } from '@/contexts/auth/useAuth';
 import { useApi } from '@/hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import BookingInfoModal, { BookingInfoFormValues } from './BookingInfoModal';
 
 interface BookingFormProps {
   price: number;
@@ -22,6 +24,8 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined);
   const [guestCount, setGuestCount] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showGuestInfoModal, setShowGuestInfoModal] = useState(false);
+  const [guestInfo, setGuestInfo] = useState<BookingInfoFormValues | null>(null);
   
   const { isAuthenticated } = useAuth();
   const { createData, isLoading, error } = useApi();
@@ -49,6 +53,27 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
     }
   };
 
+  // Handle guest info modal submission
+  const handleGuestInfoSubmit = (data: BookingInfoFormValues) => {
+    setGuestInfo(data);
+    setShowGuestInfoModal(false);
+    
+    // Proceed to payment method page with booking details and guest info
+    navigate('/payment-method', {
+      state: {
+        bookingDetails: {
+          propertyId,
+          propertyName,
+          checkIn: format(checkIn!, 'dd/MM/yyyy'),
+          checkOut: format(checkOut!, 'dd/MM/yyyy'),
+          guestCount,
+          totalPrice,
+          guestInfo: data
+        }
+      }
+    });
+  };
+
   // Handle booking submission
   const handleBookingSubmit = async () => {
     if (!checkIn || !checkOut) {
@@ -56,20 +81,15 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
       return;
     }
 
-    // If not authenticated, redirect to login
+    // If not authenticated, show guest info modal
     if (!isAuthenticated) {
-      toast.info('Vui lòng đăng nhập để đặt phòng', {
-        action: {
-          label: 'Đăng nhập',
-          onClick: () => navigate('/login', { state: { from: `/property/${propertyId}` } })
-        }
-      });
+      setShowGuestInfoModal(true);
       return;
     }
 
     setIsSubmitting(true);
     
-    // Create the booking request
+    // Create the booking request for authenticated users
     const bookingData = {
       propertyId,
       checkIn: format(checkIn, 'yyyy-MM-dd'),
@@ -236,6 +256,13 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
           </div>
         )}
       </div>
+
+      {/* Guest information modal for non-authenticated users */}
+      <BookingInfoModal
+        open={showGuestInfoModal}
+        onClose={() => setShowGuestInfoModal(false)}
+        onSubmit={handleGuestInfoSubmit}
+      />
     </div>
   );
 };

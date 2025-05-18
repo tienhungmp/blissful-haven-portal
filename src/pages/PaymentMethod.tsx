@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
 // Payment method icons
-import { CreditCard, Wallet, Bitcoin } from 'lucide-react';
+import { CreditCard, Wallet, Bitcoin, User, MapPin, Phone } from 'lucide-react';
 
 interface BookingDetails {
   propertyId: string;
@@ -18,6 +19,11 @@ interface BookingDetails {
   checkOut: string;
   guestCount: number;
   totalPrice: number;
+  guestInfo?: {
+    username: string;
+    address: string;
+    phoneNumber: string;
+  };
 }
 
 const PaymentMethod = () => {
@@ -103,6 +109,30 @@ const PaymentMethod = () => {
                     </div>
                   </div>
                 </div>
+                
+                {bookingDetails.guestInfo && (
+                  <div className="mb-6 p-4 bg-muted rounded-lg">
+                    <h3 className="font-semibold mb-2 flex items-center">
+                      <User className="h-4 w-4 mr-1" /> Thông tin người đặt
+                    </h3>
+                    <div className="space-y-1 text-sm">
+                      <p className="flex items-center">
+                        <span className="font-medium mr-2">Tên:</span>
+                        {bookingDetails.guestInfo.username}
+                      </p>
+                      <p className="flex items-center">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        <span className="font-medium mr-2">Địa chỉ:</span>
+                        {bookingDetails.guestInfo.address}
+                      </p>
+                      <p className="flex items-center">
+                        <Phone className="h-3 w-3 mr-1" />
+                        <span className="font-medium mr-2">Số điện thoại:</span>
+                        {bookingDetails.guestInfo.phoneNumber}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 
                 <div>
                   <h2 className="text-lg font-semibold mb-4">Phương thức thanh toán</h2>
