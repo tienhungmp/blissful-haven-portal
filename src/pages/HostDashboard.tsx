@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/auth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import PropertyDetailsModal from "@/components/dashboard/PropertyDetailsModal";
@@ -22,7 +23,9 @@ import {
   ThumbsUp,
   ThumbsDown,
   Meh,
-  Eye
+  Eye,
+  Check,
+  BedDouble
 } from "lucide-react";
 import {
   Tabs,
@@ -348,7 +351,7 @@ const HostDashboard = () => {
                 />
               )}
 
-              {/* Add Property Form */}
+              {/* Add Property Form - Updated with new fields */}
               <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>Thêm chỗ nghỉ mới</CardTitle>
@@ -385,15 +388,73 @@ const HostDashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      {/* New fields */}
+                      <div>
+                        <label className="text-sm font-medium mb-1 block">Số lượng phòng</label>
+                        <Input type="number" min="1" placeholder="Nhập số lượng phòng" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-1 block">Số khách tối đa/phòng</label>
+                        <div className="flex items-center">
+                          <Input type="number" min="1" placeholder="Số khách tối đa mỗi phòng" />
+                          <BedDouble className="h-5 w-5 text-muted-foreground ml-2" />
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="border-2 border-dashed rounded-lg p-4 h-64 flex flex-col items-center justify-center text-center">
-                      <Upload className="h-10 w-10 text-gray-400 mb-2" />
-                      <h3 className="text-lg font-medium mb-1">Tải lên hình ảnh</h3>
-                      <p className="text-sm text-gray-500 mb-4">Kéo thả hoặc click để chọn hình ảnh</p>
-                      <Button variant="outline" size="sm">
-                        Chọn hình ảnh
-                      </Button>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium mb-1 block">Mô tả</label>
+                        <Textarea 
+                          placeholder="Nhập mô tả chi tiết về chỗ nghỉ" 
+                          className="min-h-[100px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-1 block">Tiện ích</label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="wifi" className="rounded border-gray-300" />
+                            <label htmlFor="wifi">Wifi miễn phí</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="parking" className="rounded border-gray-300" />
+                            <label htmlFor="parking">Bãi đậu xe</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="pool" className="rounded border-gray-300" />
+                            <label htmlFor="pool">Bể bơi</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="gym" className="rounded border-gray-300" />
+                            <label htmlFor="gym">Phòng gym</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="ac" className="rounded border-gray-300" />
+                            <label htmlFor="ac">Điều hòa</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="kitchen" className="rounded border-gray-300" />
+                            <label htmlFor="kitchen">Nhà bếp</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="tv" className="rounded border-gray-300" />
+                            <label htmlFor="tv">TV</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="pets" className="rounded border-gray-300" />
+                            <label htmlFor="pets">Cho phép thú cưng</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border-2 border-dashed rounded-lg p-4 h-[150px] flex flex-col items-center justify-center text-center">
+                        <Upload className="h-10 w-10 text-gray-400 mb-2" />
+                        <h3 className="text-lg font-medium mb-1">Tải lên hình ảnh</h3>
+                        <p className="text-sm text-gray-500 mb-4">Kéo thả hoặc click để chọn hình ảnh</p>
+                        <Button variant="outline" size="sm">
+                          Chọn hình ảnh
+                        </Button>
+                      </div>
                     </div>
                   </div>
                   
