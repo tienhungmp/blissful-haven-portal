@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -14,7 +13,7 @@ import {
   Home, 
   MapPin, 
   User, 
-  Calendar, 
+  Calendar as CalendarIcon, 
   DollarSign, 
   Star,
   Check,
@@ -178,7 +177,7 @@ const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               <span className="font-medium">{bookedRooms}</span>
               
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                 <span>Tỷ lệ lấp đầy:</span>
               </div>
               <span className="font-medium">{occupancyRate}%</span>
@@ -266,7 +265,6 @@ const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
                     selected={selectedDate}
                     onSelect={setSelectedDate}
                     initialFocus
-                    className={cn("p-3 pointer-events-auto")}
                   />
                 </PopoverContent>
               </Popover>
