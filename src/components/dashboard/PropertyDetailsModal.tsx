@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,8 @@ import {
   Star,
   Check,
   X,
-  Bed
+  Bed,
+  CalendarRange
 } from "lucide-react";
 import { 
   Table,
@@ -29,13 +30,75 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
-// Sample room data - in a real app, this would come from a database
+// Extended room data with availability by date
 const roomData = [
-  { id: 1, name: "Phòng đơn", capacity: 1, price: 500000, available: 3, booked: 1 },
-  { id: 2, name: "Phòng đôi", capacity: 2, price: 800000, available: 2, booked: 2 },
-  { id: 3, name: "Phòng gia đình", capacity: 4, price: 1200000, available: 0, booked: 2 },
-  { id: 4, name: "Phòng hạng sang", capacity: 2, price: 1500000, available: 1, booked: 0 },
+  { 
+    id: 1, 
+    name: "Phòng đơn", 
+    capacity: 1, 
+    price: 500000, 
+    available: 3, 
+    booked: 1,
+    // Sample availability data by date
+    availabilityByDate: {
+      // Format: "YYYY-MM-DD": {available: number, booked: number}
+      [format(new Date(), "yyyy-MM-dd")]: {available: 3, booked: 1},
+      [format(new Date().setDate(new Date().getDate() + 1), "yyyy-MM-dd")]: {available: 2, booked: 2},
+      [format(new Date().setDate(new Date().getDate() + 2), "yyyy-MM-dd")]: {available: 1, booked: 3},
+      [format(new Date().setDate(new Date().getDate() + 3), "yyyy-MM-dd")]: {available: 0, booked: 4},
+    }
+  },
+  { 
+    id: 2, 
+    name: "Phòng đôi", 
+    capacity: 2, 
+    price: 800000, 
+    available: 2, 
+    booked: 2,
+    availabilityByDate: {
+      [format(new Date(), "yyyy-MM-dd")]: {available: 2, booked: 2},
+      [format(new Date().setDate(new Date().getDate() + 1), "yyyy-MM-dd")]: {available: 3, booked: 1},
+      [format(new Date().setDate(new Date().getDate() + 2), "yyyy-MM-dd")]: {available: 1, booked: 3},
+      [format(new Date().setDate(new Date().getDate() + 3), "yyyy-MM-dd")]: {available: 0, booked: 4},
+    }
+  },
+  { 
+    id: 3, 
+    name: "Phòng gia đình", 
+    capacity: 4, 
+    price: 1200000, 
+    available: 0, 
+    booked: 2,
+    availabilityByDate: {
+      [format(new Date(), "yyyy-MM-dd")]: {available: 0, booked: 2},
+      [format(new Date().setDate(new Date().getDate() + 1), "yyyy-MM-dd")]: {available: 1, booked: 1},
+      [format(new Date().setDate(new Date().getDate() + 2), "yyyy-MM-dd")]: {available: 2, booked: 0},
+      [format(new Date().setDate(new Date().getDate() + 3), "yyyy-MM-dd")]: {available: 0, booked: 2},
+    }
+  },
+  { 
+    id: 4, 
+    name: "Phòng hạng sang", 
+    capacity: 2, 
+    price: 1500000, 
+    available: 1, 
+    booked: 0,
+    availabilityByDate: {
+      [format(new Date(), "yyyy-MM-dd")]: {available: 1, booked: 0},
+      [format(new Date().setDate(new Date().getDate() + 1), "yyyy-MM-dd")]: {available: 1, booked: 0},
+      [format(new Date().setDate(new Date().getDate() + 2), "yyyy-MM-dd")]: {available: 0, booked: 1},
+      [format(new Date().setDate(new Date().getDate() + 3), "yyyy-MM-dd")]: {available: 1, booked: 0},
+    }
+  },
 ];
 
 interface PropertyDetailsModalProps {
@@ -56,13 +119,33 @@ const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
   onClose,
   property
 }) => {
-  // Calculate total rooms and occupancy rate
-  const totalRooms = roomData.reduce((sum, room) => sum + room.available + room.booked, 0);
-  const bookedRooms = roomData.reduce((sum, room) => sum + room.booked, 0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  
+  // Get formatted selected date string for querying availability
+  const formattedSelectedDate = selectedDate ? format(selectedDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd");
+  
+  // Get room data for the selected date
+  const getRoomDataForSelectedDate = (room: any) => {
+    if (selectedDate && room.availabilityByDate[formattedSelectedDate]) {
+      return {
+        ...room,
+        available: room.availabilityByDate[formattedSelectedDate].available,
+        booked: room.availabilityByDate[formattedSelectedDate].booked
+      };
+    }
+    return room;
+  };
+  
+  // Apply date filter to room data
+  const filteredRoomData = roomData.map(getRoomDataForSelectedDate);
+  
+  // Calculate total rooms and occupancy rate based on filtered data
+  const totalRooms = filteredRoomData.reduce((sum, room) => sum + room.available + room.booked, 0);
+  const bookedRooms = filteredRoomData.reduce((sum, room) => sum + room.booked, 0);
   const occupancyRate = totalRooms > 0 ? Math.round((bookedRooms / totalRooms) * 100) : 0;
   
   // Check if fully booked
-  const isFullyBooked = roomData.every(room => room.available === 0);
+  const isFullyBooked = filteredRoomData.every(room => room.available === 0);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -161,7 +244,35 @@ const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
         </div>
         
         <div className="mt-2">
-          <h3 className="font-medium mb-2">Danh sách phòng</h3>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <h3 className="font-medium">Danh sách phòng</h3>
+            
+            {/* Date filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Kiểm tra phòng trống theo ngày:</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center gap-2"
+                  >
+                    <CalendarRange className="h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "dd/MM/yyyy") : "Chọn ngày"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+          
           <Table>
             <TableHeader>
               <TableRow>
@@ -174,7 +285,7 @@ const PropertyDetailsModal: React.FC<PropertyDetailsModalProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {roomData.map((room) => (
+              {filteredRoomData.map((room) => (
                 <TableRow key={room.id}>
                   <TableCell className="font-medium">{room.name}</TableCell>
                   <TableCell>{room.capacity} người</TableCell>
