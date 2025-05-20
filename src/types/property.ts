@@ -1,3 +1,4 @@
+
 export interface Property {
   id: string;
   name: string;
@@ -6,6 +7,19 @@ export interface Property {
   rating: number;
   image: string;
   type: string;
+  description?: string;
+  numberOfRooms?: number;
+  maxGuestsPerRoom?: number;
+  amenities?: {
+    wifi: boolean;
+    parking: boolean;
+    pool: boolean;
+    gym: boolean;
+    ac: boolean;
+    kitchen: boolean;
+    tv: boolean;
+    pets: boolean;
+  };
 }
 
 export type Review = {

@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/auth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import PropertyDetailsModal from "@/components/dashboard/PropertyDetailsModal";
+import PropertyEditModal from "@/components/dashboard/PropertyEditModal";
 import { 
   Home, 
   PlusCircle, 
@@ -106,14 +107,26 @@ const HostDashboard = () => {
   const [bookingStatus, setBookingStatus] = useState("");
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
   const [viewingProperty, setViewingProperty] = useState<typeof properties[0] | null>(null);
+  const [editingProperty, setEditingProperty] = useState<typeof properties[0] | null>(null);
 
   // Handle property operations
   const handleAddProperty = () => {
     toast.success("Chức năng thêm chỗ nghỉ mới sẽ được cập nhật sau!");
   };
 
-  const handleEditProperty = (id: number) => {
-    toast.success(`Chỉnh sửa chỗ nghỉ ID: ${id}`);
+  const handleEditProperty = (property: typeof properties[0]) => {
+    setEditingProperty(property);
+  };
+
+  const handleSaveEditedProperty = (updatedProperty: typeof properties[0]) => {
+    // In a real app, you would send an API request to update the property
+    // For now, we'll just update it in our local data
+    const updatedProperties = properties.map(prop => 
+      prop.id === updatedProperty.id ? updatedProperty : prop
+    );
+    // Here we would typically update the state with the new properties
+    toast.success(`Đã cập nhật thông tin chỗ nghỉ: ${updatedProperty.name}`);
+    setEditingProperty(null);
   };
 
   const handleDeleteProperty = (id: number) => {
@@ -317,7 +330,7 @@ const HostDashboard = () => {
                                   <Eye className="h-3 w-3 mr-1" />
                                   Xem
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleEditProperty(property.id)}>
+                                <Button variant="outline" size="sm" onClick={() => handleEditProperty(property)}>
                                   Chỉnh sửa
                                 </Button>
                                 <Button variant="outline" size="sm" className="text-red-500" onClick={() => handleDeleteProperty(property.id)}>
@@ -348,6 +361,16 @@ const HostDashboard = () => {
                   open={!!viewingProperty} 
                   onClose={() => setViewingProperty(null)} 
                   property={viewingProperty} 
+                />
+              )}
+
+              {/* Property Edit Modal */}
+              {editingProperty && (
+                <PropertyEditModal
+                  open={!!editingProperty}
+                  onClose={() => setEditingProperty(null)}
+                  property={editingProperty}
+                  onSave={handleSaveEditedProperty}
                 />
               )}
 
