@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import PropertyDetailsModal from "@/components/dashboard/PropertyDetailsModal";
 import { 
   Home, 
   PlusCircle, 
@@ -20,7 +21,8 @@ import {
   Package,
   ThumbsUp,
   ThumbsDown,
-  Meh
+  Meh,
+  Eye
 } from "lucide-react";
 import {
   Tabs,
@@ -100,6 +102,7 @@ const HostDashboard = () => {
   const [bookingSearchQuery, setBookingSearchQuery] = useState("");
   const [bookingStatus, setBookingStatus] = useState("");
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
+  const [viewingProperty, setViewingProperty] = useState<typeof properties[0] | null>(null);
 
   // Handle property operations
   const handleAddProperty = () => {
@@ -125,6 +128,11 @@ const HostDashboard = () => {
 
   const handleSendConfirmationEmail = (id: string) => {
     toast.success(`Đã gửi email xác nhận cho đơn đặt phòng: ${id}`);
+  };
+
+  // Handle showing property details modal
+  const handleViewProperty = (property: typeof properties[0]) => {
+    setViewingProperty(property);
   };
 
   // Handle showing reviews for a specific property
@@ -301,7 +309,11 @@ const HostDashboard = () => {
                               </span>
                             </TableCell>
                             <TableCell>
-                              <div className="flex gap-2">
+                              <div className="flex gap-2 flex-wrap">
+                                <Button variant="outline" size="sm" className="text-blue-500" onClick={() => handleViewProperty(property)}>
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  Xem
+                                </Button>
                                 <Button variant="outline" size="sm" onClick={() => handleEditProperty(property.id)}>
                                   Chỉnh sửa
                                 </Button>
@@ -327,6 +339,16 @@ const HostDashboard = () => {
                 </CardContent>
               </Card>
 
+              {/* Property Details Modal */}
+              {viewingProperty && (
+                <PropertyDetailsModal 
+                  open={!!viewingProperty} 
+                  onClose={() => setViewingProperty(null)} 
+                  property={viewingProperty} 
+                />
+              )}
+
+              {/* Add Property Form */}
               <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>Thêm chỗ nghỉ mới</CardTitle>
