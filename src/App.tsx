@@ -19,6 +19,7 @@ import HostDashboard from "./pages/HostDashboard";
 import NotFound from "./pages/NotFound";
 import PaymentMethod from "./pages/PaymentMethod";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import InvoiceLookup from "./pages/InvoiceLookup";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/invoice-lookup" element={<InvoiceLookup />} />
             <Route path="/booking-history" element={
               <ProtectedRoute>
                 <BookingHistory />
