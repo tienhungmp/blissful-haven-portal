@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import PropertyCard from './PropertyCard';
+import { Sparkles, TrendingUp } from 'lucide-react';
 
 // Sample property data
 const featuredProperties = [
@@ -63,26 +63,40 @@ const featuredProperties = [
 
 const FeaturedProperties = () => {
   return (
-    <section className="container py-16">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-3xl font-bold">Chỗ nghỉ nổi bật</h2>
-          <p className="text-muted-foreground mt-2">Khám phá những lựa chọn được yêu thích nhất</p>
+    <section className="container py-20 relative">
+      {/* Decorative background elements */}
+      <div className="absolute top-10 left-10 w-20 h-20 bg-brand-blue/10 rounded-full blur-xl"></div>
+      <div className="absolute bottom-10 right-10 w-16 h-16 bg-brand-red/10 rounded-full blur-lg"></div>
+      
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center px-4 py-2 bg-brand-blue/10 rounded-full mb-4">
+          <Sparkles className="w-5 h-5 text-brand-blue mr-2" />
+          <span className="text-brand-blue font-semibold">Được yêu thích nhất</span>
         </div>
-        <Button variant="outline" className="hidden md:inline-flex">
-          Xem tất cả
-        </Button>
+        <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
+          Chỗ nghỉ nổi bật
+        </h2>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Khám phá những lựa chọn được yêu thích nhất với đánh giá cao từ khách hàng
+        </p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         {featuredProperties.map(property => (
-          <PropertyCard key={property.id} {...property} />
+          <div key={property.id} className="transform hover:scale-105 transition-all duration-300">
+            <PropertyCard {...property} />
+          </div>
         ))}
       </div>
       
-      <div className="mt-8 text-center md:hidden">
-        <Button variant="outline">
-          Xem tất cả
+      <div className="text-center">
+        <Button 
+          variant="outline" 
+          size="lg"
+          className="px-8 py-6 text-lg font-semibold border-2 border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white transition-all duration-300 rounded-xl shadow-lg hover:shadow-xl group"
+        >
+          <TrendingUp className="mr-2 h-5 w-5 group-hover:animate-bounce" />
+          Xem tất cả chỗ nghỉ
         </Button>
       </div>
     </section>
