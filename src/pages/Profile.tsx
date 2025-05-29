@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -26,6 +25,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import InvoiceDetailModal from "@/components/InvoiceDetailModal";
 
 // Mock booking data
 const mockBookings = [
@@ -120,10 +120,35 @@ const getStatusColor = (status: string) => {
 const Profile = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleViewInvoiceDetail = (booking: any) => {
+    // Transform booking data to invoice format
+    const invoiceData = {
+      id: booking.id,
+      propertyName: booking.propertyName,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      guestCount: 2, // Default guest count from mockBookings
+      totalPrice: booking.totalPrice,
+      status: booking.status,
+      paymentMethod: 'Thẻ tín dụng',
+      guestInfo: {
+        username: user?.name || 'Chưa cập nhật',
+        address: 'Chưa cập nhật',
+        phoneNumber: 'Chưa cập nhật',
+        email: user?.email || 'Chưa cập nhật'
+      }
+    };
+    
+    setSelectedInvoice(invoiceData);
+    setIsInvoiceModalOpen(true);
   };
 
   // Determine if we need scrolling (more than 7 items)
@@ -254,19 +279,7 @@ const Profile = () => {
                                       variant="ghost" 
                                       size="sm" 
                                       className="h-8 w-8 p-0"
-                                      onClick={() => navigate('/payment-success', { 
-                                        state: { 
-                                          paymentDetails: {
-                                            propertyName: booking.propertyName,
-                                            checkIn: booking.checkIn,
-                                            checkOut: booking.checkOut,
-                                            totalPrice: booking.totalPrice,
-                                            guestCount: 2,
-                                            paymentMethod: "Thẻ tín dụng"
-                                          },
-                                          bookingId: booking.id
-                                        } 
-                                      })}
+                                      onClick={() => handleViewInvoiceDetail(booking)}
                                     >
                                       <ExternalLink className="h-4 w-4" />
                                     </Button>
@@ -308,19 +321,7 @@ const Profile = () => {
                                         variant="outline" 
                                         size="sm" 
                                         className="h-7 text-xs"
-                                        onClick={() => navigate('/payment-success', { 
-                                          state: { 
-                                            paymentDetails: {
-                                              propertyName: booking.propertyName,
-                                              checkIn: booking.checkIn,
-                                              checkOut: booking.checkOut,
-                                              totalPrice: booking.totalPrice,
-                                              guestCount: 2,
-                                              paymentMethod: "Thẻ tín dụng"
-                                            },
-                                            bookingId: booking.id
-                                          } 
-                                        })}
+                                        onClick={() => handleViewInvoiceDetail(booking)}
                                       >
                                         Chi tiết
                                       </Button>
@@ -372,6 +373,14 @@ const Profile = () => {
             </div>
           </div>
         </div>
+        
+        {/* Invoice Detail Modal */}
+        <InvoiceDetailModal
+          isOpen={isInvoiceModalOpen}
+          onClose={() => setIsInvoiceModalOpen(false)}
+          invoiceData={selectedInvoice}
+        />
+        
         <Footer />
       </div>
     </ProtectedRoute>
