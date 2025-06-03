@@ -26,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import InvoiceDetailModal from "@/components/InvoiceDetailModal";
+import EditProfileModal from "@/components/profile/EditProfileModal";
 
 // Mock booking data
 const mockBookings = [
@@ -122,6 +123,7 @@ const Profile = () => {
   const { user, logout } = useAuth();
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -149,6 +151,10 @@ const Profile = () => {
     
     setSelectedInvoice(invoiceData);
     setIsInvoiceModalOpen(true);
+  };
+
+  const handleEditProfile = () => {
+    setIsEditProfileModalOpen(true);
   };
 
   // Determine if we need scrolling (more than 7 items)
@@ -225,7 +231,13 @@ const Profile = () => {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between flex-col sm:flex-row gap-2">
-                  <Button variant="outline" className="w-full sm:w-auto">Chỉnh sửa hồ sơ</Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full sm:w-auto"
+                    onClick={handleEditProfile}
+                  >
+                    Chỉnh sửa hồ sơ
+                  </Button>
                   <Button 
                     variant="destructive" 
                     className="w-full sm:w-auto"
@@ -379,6 +391,13 @@ const Profile = () => {
           isOpen={isInvoiceModalOpen}
           onClose={() => setIsInvoiceModalOpen(false)}
           invoiceData={selectedInvoice}
+        />
+        
+        {/* Edit Profile Modal */}
+        <EditProfileModal
+          isOpen={isEditProfileModalOpen}
+          onClose={() => setIsEditProfileModalOpen(false)}
+          user={user}
         />
         
         <Footer />
