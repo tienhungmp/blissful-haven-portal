@@ -21,6 +21,7 @@ import PaymentMethod from "./pages/PaymentMethod";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import InvoiceLookup from "./pages/InvoiceLookup";
 import StatusMessage from "./pages/StatusMessage";
+import Favorites from "./pages/Favorites";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/invoice-lookup" element={<InvoiceLookup />} />
             <Route path="/status" element={<StatusMessage />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="/booking-history" element={
               <ProtectedRoute>
                 <BookingHistory />
