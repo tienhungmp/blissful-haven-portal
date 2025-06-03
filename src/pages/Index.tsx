@@ -11,6 +11,7 @@ import PopularDestinations from '@/components/PopularDestinations';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import NewsletterSection from '@/components/NewsletterSection';
 import Footer from '@/components/Footer';
+import AnimatedBackground from '@/components/AnimatedBackground';
 
 const Index = () => {
   return (
@@ -21,9 +22,9 @@ const Index = () => {
         <div className="container px-4 relative">
           <SearchBox />
         </div>
-        <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <AnimatedBackground>
           <FeaturedProperties />
-        </div>
+        </AnimatedBackground>
         <div className="bg-gradient-to-r from-white to-blue-50">
           <SpecialOffers />
         </div>
