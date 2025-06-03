@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import InvoiceDetailModal from "@/components/InvoiceDetailModal";
 import EditProfileModal from "@/components/profile/EditProfileModal";
+import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 
 // Mock booking data
 const mockBookings = [
@@ -124,6 +125,7 @@ const Profile = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -155,6 +157,10 @@ const Profile = () => {
 
   const handleEditProfile = () => {
     setIsEditProfileModalOpen(true);
+  };
+
+  const handleChangePassword = () => {
+    setIsChangePasswordModalOpen(true);
   };
 
   // Determine if we need scrolling (more than 7 items)
@@ -372,7 +378,7 @@ const Profile = () => {
                   <div>
                     <h3 className="font-medium mb-2">Mật khẩu</h3>
                     <p className="text-sm text-gray-500">Cập nhật mật khẩu định kỳ để tăng cường bảo mật</p>
-                    <Button variant="outline" className="mt-2">Đổi mật khẩu</Button>
+                    <Button variant="outline" className="mt-2" onClick={handleChangePassword}>Đổi mật khẩu</Button>
                   </div>
                   <Separator />
                   <div>
@@ -398,6 +404,12 @@ const Profile = () => {
           isOpen={isEditProfileModalOpen}
           onClose={() => setIsEditProfileModalOpen(false)}
           user={user}
+        />
+        
+        {/* Change Password Modal */}
+        <ChangePasswordModal
+          isOpen={isChangePasswordModalOpen}
+          onClose={() => setIsChangePasswordModalOpen(false)}
         />
         
         <Footer />
