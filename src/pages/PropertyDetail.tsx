@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -31,6 +30,13 @@ const properties = [
     bathrooms: 3,
     guests: 8,
     description: "Trải nghiệm không gian sống sang trọng tại biệt thự Vinhomes Riverside với không gian xanh mát, view sông thoáng đãng. Biệt thự được thiết kế theo phong cách hiện đại, đầy đủ tiện nghi cao cấp, phù hợp cho các kỳ nghỉ gia đình hoặc tổ chức sự kiện nhỏ.",
+    characteristics: [
+      "Gần trung tâm thành phố (15 phút di chuyển)",
+      "Khu vực yên tĩnh, ít tiếng ồn",
+      "View sông thoáng đãng",
+      "Gần công viên và cây xanh",
+      "Giao thông thuận tiện"
+    ],
     amenities: [
       "Wifi",
       "Hồ bơi",
@@ -93,6 +99,13 @@ const properties = [
     bathrooms: 1,
     guests: 4,
     description: "Sapa Retreat Homestay nằm ở làng Tả Van yên bình, cách thị trấn Sapa khoảng 8km. Homestay được xây dựng theo kiến trúc truyền thống của người H'Mông với khung gỗ chắc chắn kết hợp hiện đại. Từ ban công, bạn có thể ngắm nhìn toàn cảnh thung lũng Mường Hoa tuyệt đẹp.",
+    characteristics: [
+      "Khu vực yên tĩnh, không ồn ào",
+      "Thiên nhiên tuyệt đẹp, cây xanh mát mắt",
+      "Gần các địa điểm du lịch nổi tiếng",
+      "Không khí trong lành",
+      "View núi non hùng vĩ"
+    ],
     amenities: [
       "Wifi",
       "Bữa sáng",
@@ -165,6 +178,10 @@ const PropertyDetail = () => {
               bathrooms={property.bathrooms}
               guests={property.guests}
               host={property.host}
+            />
+
+            <PropertyCharacteristics 
+              characteristics={property.characteristics}
             />
 
             <PropertyTabs 
