@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import PropertyHeader from '@/components/property/PropertyHeader';
 import PropertyGallery from '@/components/property/PropertyGallery';
 import PropertyInfo from '@/components/property/PropertyInfo';
+import PropertyCharacteristics from '@/components/property/PropertyCharacteristics';
 import PropertyTabs from '@/components/property/PropertyTabs';
 import BookingForm from '@/components/property/BookingForm';
 
