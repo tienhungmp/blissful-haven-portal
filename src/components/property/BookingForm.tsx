@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Star, CalendarIcon, Users, AlertCircle } from 'lucide-react';
+import { Star, CalendarIcon, Users, AlertCircle, Bed } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, addDays, differenceInDays, isBefore } from 'date-fns';
@@ -24,6 +24,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined);
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined);
   const [guestCount, setGuestCount] = useState(1);
+  const [roomCount, setRoomCount] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showGuestInfoModal, setShowGuestInfoModal] = useState(false);
   const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
@@ -38,8 +39,8 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
     ? Math.max(differenceInDays(checkOut, checkIn), 1) 
     : 0;
   
-  const serviceFee = Math.round((price * nights) * 0.05);
-  const totalPrice = price * nights + serviceFee;
+  const serviceFee = Math.round((price * nights * roomCount) * 0.05);
+  const totalPrice = price * nights * roomCount + serviceFee;
 
   // Handle check-in date selection
   const handleCheckInSelect = (date: Date | undefined) => {
@@ -69,6 +70,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
           checkIn: format(checkIn!, 'dd/MM/yyyy'),
           checkOut: format(checkOut!, 'dd/MM/yyyy'),
           guestCount,
+          roomCount,
           totalPrice,
           guestInfo: data
         }
@@ -97,6 +99,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
       checkIn: format(checkIn, 'yyyy-MM-dd'),
       checkOut: format(checkOut, 'yyyy-MM-dd'),
       guestCount,
+      roomCount,
       totalPrice,
       status: 'pending'
     };
@@ -116,6 +119,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
               checkIn: format(checkIn, 'dd/MM/yyyy'),
               checkOut: format(checkOut, 'dd/MM/yyyy'),
               guestCount,
+              roomCount,
               totalPrice
             }
           }
@@ -139,7 +143,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
     if (error) {
       // Clear error when user changes inputs
     }
-  }, [checkIn, checkOut, guestCount]);
+  }, [checkIn, checkOut, guestCount, roomCount]);
 
   return (
     <div className="sticky top-20">
@@ -147,7 +151,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
         <div className="flex justify-between items-center mb-4">
           <div>
             <span className="text-xl font-bold">{price.toLocaleString('vi-VN')}đ</span>
-            <span className="text-sm font-normal text-muted-foreground"> /đêm</span>
+            <span className="text-sm font-normal text-muted-foreground"> /đêm/phòng</span>
           </div>
           <div className="flex items-center">
             <Star className="h-4 w-4 fill-brand-yellow text-brand-yellow mr-1" />
@@ -208,7 +212,7 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="p-3 col-span-2">
+            <div className="p-3 border-r">
               <label className="block text-xs text-muted-foreground mb-1">Số khách</label>
               <div className="flex items-center">
                 <Users className="h-4 w-4 mr-2 text-muted-foreground" />
@@ -219,6 +223,21 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
                 >
                   {[...Array(maxGuests)].map((_, i) => (
                     <option key={i} value={i + 1}>{i + 1} khách</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="p-3">
+              <label className="block text-xs text-muted-foreground mb-1">Số phòng</label>
+              <div className="flex items-center">
+                <Bed className="h-4 w-4 mr-2 text-muted-foreground" />
+                <select 
+                  className="w-full border-0 focus:ring-0 p-0"
+                  value={roomCount}
+                  onChange={e => setRoomCount(parseInt(e.target.value))}
+                >
+                  {[...Array(5)].map((_, i) => (
+                    <option key={i} value={i + 1}>{i + 1} phòng</option>
                   ))}
                 </select>
               </div>
@@ -247,8 +266,8 @@ const BookingForm = ({ price, rating, maxGuests, propertyId, propertyName }: Boo
         {nights > 0 ? (
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="underline">{price.toLocaleString('vi-VN')}đ x {nights} đêm</span>
-              <span>{(price * nights).toLocaleString('vi-VN')}đ</span>
+              <span className="underline">{price.toLocaleString('vi-VN')}đ x {nights} đêm x {roomCount} phòng</span>
+              <span>{(price * nights * roomCount).toLocaleString('vi-VN')}đ</span>
             </div>
             <div className="flex justify-between">
               <span className="underline">Phí dịch vụ</span>
